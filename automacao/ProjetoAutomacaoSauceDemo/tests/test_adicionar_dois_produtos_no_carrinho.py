@@ -20,7 +20,7 @@ class TesteAdicionarDoisPNC:
         wait.until(EC.element_to_be_clickable((By.XPATH,"//button[@data-test='add-to-cart-sauce-labs-backpack']"))).click()
 
         #validar o carrinho
-        driver.find_element(By.XPATH,"//*[class='shopping_cart_link']").click()
+        driver.find_element(By.XPATH,"//*[@class='shopping_cart_link']").click()
         assert driver.find_element(By.XPATH, "//div[@class='inventory_item_name'][contains(text(),'Sauce Labs Backpack')]").is_dispalyed()
 
         #voltar para a vitrine 
