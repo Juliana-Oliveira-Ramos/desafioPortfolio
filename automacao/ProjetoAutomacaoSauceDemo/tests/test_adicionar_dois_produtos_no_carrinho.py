@@ -27,12 +27,14 @@ class TesteAdicionarDoisPNC:
         driver.find_element(By.ID,"continue-shopping").click()
 
 
-        #adicionar segundo produto
-        wait.until(EC.presence_of_element_located((By.XPATH, "//button[@name='add-to-cart-sauce-labs-bike-light']"))).click()
+        # adicionar segundo produto
+        element = wait.until(EC.presence_of_element_located((By.NAME, "add-to-cart-sauce-labs-bike-light")))
+        driver.execute_script("arguments[0].scrollIntoView();", element)  # garante que o botão está visível na tela
+        wait.until(EC.element_to_be_clickable((By.NAME, "add-to-cart-sauce-labs-bike-light"))).click()
 
-        #abrir o carrinho uma unica vez
+        # abrir o carrinho uma única vez
         wait.until(EC.element_to_be_clickable((By.CLASS_NAME,"shopping_cart_link"))).click()
 
-        #validar badge
+        # validar badge
         badge = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@data-test='shopping-cart-badge']"))).text
-        assert int (badge)== 2 
+        assert int(badge) == 2
