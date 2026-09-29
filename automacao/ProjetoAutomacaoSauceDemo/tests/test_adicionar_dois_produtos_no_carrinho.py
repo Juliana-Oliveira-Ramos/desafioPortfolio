@@ -20,8 +20,8 @@ class TesteAdicionarDoisPNC:
         wait.until(EC.element_to_be_clickable((By.XPATH,"//button[@data-test='add-to-cart-sauce-labs-backpack']"))).click()
 
         #validar o carrinho
-        driver.find_element(By.XPATH,"//*[@class='shopping_cart_link']").click()
-        assert driver.find_element(By.XPATH, "//div[@class='inventory_item_name'][contains(text(),'Sauce Labs Backpack')]").is_dispalyed()
+        wait.until(EC.element_to_be_clickable((By.XPATH,"//*[@class='shopping_cart_link']"))).click()
+        assert driver.find_element(By.XPATH, "//div[@class='inventory_item_name'][contains(text(),'Sauce Labs Backpack')]").is_displayed()
 
         #voltar para a vitrine 
         driver.find_element(By.ID,"continue-shopping").click()
@@ -31,8 +31,8 @@ class TesteAdicionarDoisPNC:
         wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@name='add-to-cart-sauce-labs-bike-light']"))).click()
 
         #abrir o carrinho uma unica vez
-        driver.find_element(By.CLASS_NAME,"shopping_cart_link").click()
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME,"shopping_cart_link"))).click()
 
         #validar badge
-        badge = driver.find_element(By.XPATH, "//*[@data-test='shopping-cart-badge']").text
+        badge = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@data-test='shopping-cart-badge']"))).text
         assert int (badge)== 2 
