@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.commom.exceptions import StaleElementReferenceException
 import pytest
 
 
@@ -19,28 +20,63 @@ class TestAdicionarProdutoCarrinho:
         campo_senha = driver.find_element(By.ID, "password").send_keys("secret_sauce")
         botao_login = driver.find_element(By.ID, "login-button").click()
 
-       
+        try:
+            botao_add = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(@class,'btn_inventory')]")))
+            botao_add.click()
+        except StaleElementReferenceException:
+            botao_add = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(@class,'btn_inventory')]")))
+            botao_add.click()
 
-
-        #adicionar um produto no carrinho
-        driver.find_element(By.XPATH, "//*[contains(text(),'Sauce Labs Backpack')]").click()
-
-
-        #verificar se o produto foi adicionado ao carrinho
-        wait = WebDriverWait(driver, 10)
-        botao_add = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(@class,'btn_inventory')]")))
-        botao_add.click()
-
-        driver.find_element(By.XPATH, "//*[@class='shopping_cart_link']").click()
+        # abrir carrinho
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "shopping_cart_link"))).click()
         assert driver.find_element(By.XPATH, "//*[contains(text(),'Sauce Labs Backpack')]").is_displayed()
 
-        #clicar no botao checkout para finalizar as 
-        wait = WebDriverWait(driver, 10)
-        botao_checkout = wait.until(EC.element_to_be_clickable((By.ID, "checkout")))
-        botao_checkout.click()
+        # checkout (com try/except)
+        try:
+            botao_checkout = wait.until(EC.element_to_be_clickable((By.ID, "checkout")))
+            botao_checkout.click()
+        except StaleElementReferenceException:
+            botao_checkout = wait.until(EC.element_to_be_clickable((By.ID, "checkout")))
+            botao_checkout.click()
 
-        assert driver.find_element(By.XPATH, "//span[@class='title' and text()='Checkout: Your Information']").is_displayed()
+        # validar página de checkout
+        try:
+            titulo = driver.find_element(By.XPATH, "//span[@class='title']").text
+        except StaleElementReferenceException:
+            titulo = driver.find_element(By.XPATH, "//span[@class='title']").text
+        assert titulo == "Checkout: Your Information"
 
+        # preencher formulário
+        driver.find_element(By.ID, "first-name").send_keys("Teste")
+        driver.find_element(By.ID, "last-name").send_keys("do Teste")
+        driver.find_element(By.ID, "postal-code").send_keys("200000-000")
 
+        # continuar (com try/except)
+        try:
+            botao_continue = wait.until(EC.element_to_be_clickable((By.ID, "continue")))
+            botao_continue.click()
+        except StaleElementReferenceException:
+            botao_continue = wait.until(EC.element_to_be_clickable((By.ID, "continue")))
+            botao_continue.click()
 
-        
+        # validar página de overview
+        try:
+            titulo_checkout = driver.find_element(By.XPATH, "//span[@class='title']").text
+        except StaleElementReferenceException:
+            titulo_checkout = driver.find_element(By.XPATH, "//span[@class='title']").text
+        assert titulo_checkout == "Checkout: Overview"
+
+        # finalizar compra (com try/except)
+        try:
+            botao_finish = wait.until(EC.element_to_be_clickable((By.ID, "finish")))
+            botao_finish.click()
+        except StaleElementReferenceException:
+            botao_finish = wait.until(EC.element_to_be_clickable((By.ID, "finish")))
+            botao_finish.click()
+
+        # validar retorno à página inicial (com try/except)
+        try:
+            pagina_inicial = driver.find_element(By.CLASS_NAME, "app_logo").text
+        except StaleElementReferenceException:
+            pagina_inicial = driver.find_element(By.CLASS_NAME, "app_logo").text
+        assert pagina_inicial == "Swag Labs"
