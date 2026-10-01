@@ -3,6 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC 
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import StaleElementReferenceException
 import pytest
 
 
@@ -29,12 +30,18 @@ class TesteAdicionarDoisPNC:
 
         # adicionar segundo produto
         element = wait.until(EC.presence_of_element_located((By.XPATH, "//button[@data-test='add-to-cart-sauce-labs-bike-light']")))
-        driver.execute_script("arguments[0].scrollIntoView();", element)  # garante que o botão está visível na tela
+        driver.execute_script("arguments[0].scrollIntoView();", element)  # garante que o botão está visível
         wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-test='add-to-cart-sauce-labs-bike-light']"))).click()
 
-        # abrir o carrinho uma única vez
-        wait.until(EC.element_to_be_clickable((By.ID,"shopping_cart_link"))).click()
+        # abrir o carrinho uma única vez (usar CLASS_NAME, não ID)
+        wait.until(EC.element_to_be_clickable((By.CLASS_NAME, "shopping_cart_link"))).click()
 
-        # validar badge
-        badge = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@data-test='shopping-cart-badge']"))).text
+        # validar badge (com try/except para evitar stale)
+
+        try:
+            badge = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@data-test='shopping-cart-badge']"))).text
+        except StaleElementReferenceException:
+            badge = wait.until(EC.presence_of_element_located((By.XPATH, "//*[@data-test='shopping-cart-badge']"))).text
+
         assert int(badge) == 2
+
