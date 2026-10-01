@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.commom.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException
 import pytest
 
 
