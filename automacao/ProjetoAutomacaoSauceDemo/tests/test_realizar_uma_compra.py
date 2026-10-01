@@ -14,11 +14,13 @@ import pytest
 class TestAdicionarProdutoCarrinho:
     def test_adicionar_um_produto_carrinho(self,setup_teardown):
         driver = setup_teardown
+        wait = WebDriverWait(driver, 20)
         
         #login
         campo_login = driver.find_element(By.ID,"user-name").send_keys("standard_user")
         campo_senha = driver.find_element(By.ID, "password").send_keys("secret_sauce")
         botao_login = driver.find_element(By.ID, "login-button").click()
+
 
         try:
             botao_add = wait.until(EC.element_to_be_clickable((By.XPATH, "//*[contains(@class,'btn_inventory')]")))
